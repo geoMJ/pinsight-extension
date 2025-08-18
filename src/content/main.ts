@@ -1,51 +1,44 @@
-// Utilities
-
-let pinListReady = false;
-let timer: number;
-
-const debounce = (fn: () => void, t: number) => {
-    return function () {
+// Util function to avoid too many requests to the server
+const debounce = <CallbackWithArgs extends (...args: any[]) => void>(
+    fn: CallbackWithArgs,
+    t: number
+) => {
+    let timer: number;
+    return function (...args: Parameters<CallbackWithArgs>) {
         clearTimeout(timer);
-        timer = setTimeout(() => fn(), t);
+        timer = setTimeout(() => fn(...args), t);
     };
 };
 
-const removePinElements = (nElementsToRemove: number, node: Element) => {
-    if (nElementsToRemove < 1) return;
-    const parent = node.parentElement;
-    console.log(node)
-    console.log(parent)
-    if (parent) {
-        node.remove();
-        nElementsToRemove -= 1;
-        removePinElements(nElementsToRemove, parent);
-    }
-};
-
 // Observer
-// Reflect canges when new pins appear in the container
-const observer = new MutationObserver((mutations, observer) => {
+// Reflect changes when new pins appear in the container
+const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
-            if (!(node instanceof HTMLDivElement)) continue;
-            onValidMutation(node, observer);
+            const isNodeValid =
+                node instanceof HTMLDivElement &&
+                node.getAttribute("role") === "listitem" &&
+                node.hasChildNodes();
+
+            if (!isNodeValid) continue;
+            updatePinGrid();
         }
     }
 });
 
-const onValidMutation = (node: HTMLDivElement, observer: MutationObserver) => {
-    if (node.role === "list") {
-        observer.disconnect();
-        observer.observe(node, { childList: true, subtree: true });
-        console.log("changed node");
-        pinListReady = true;
-        return;
-    } else if (pinListReady === true) return updatePinGrid();
+// Logic for pin removal
+
+// Pins marked as non AI
+const processedHumanPins = new Set<String>();
+
+// We'll remove the pin which tree starts at the "list item" element
+const removePinElements = (levels: number, node: Element) => {
+    let pinNode: Element | null = node;
+    for (let i = 0; i < levels && pinNode; i++) {
+        pinNode = pinNode.parentElement;
+    }
+    pinNode?.remove();
 };
-
-// Logic for individual pins
-
-const processedPins = new Set<String>();
 
 // We run the AI check only if this pin has not already been processed
 const processPinLink = async (pinUrl: string, pinContainer: Element) => {
@@ -54,23 +47,24 @@ const processPinLink = async (pinUrl: string, pinContainer: Element) => {
     const htmlPageContent = await pinPageResponse.text();
     const doc = parser.parseFromString(htmlPageContent, "text/html");
 
-    if (doc.querySelector("[data-test-id*='ai-generated']") === null) return;
-    console.log("found ai generated image");
+    if (doc.querySelector("[data-test-id*='ai-generated']") === null)
+        return processedHumanPins.add(pinUrl);
 
     // There are three elements to remove : the card itself and its parents / nested containers
-    removePinElements(3, pinContainer);
+    removePinElements(2, pinContainer);
 };
 
 // Looping through all pin cards
+const debouncedCheck = debounce(processPinLink, 200);
+
 const updatePinGrid = () => {
     const pinCards = document.querySelectorAll("[data-test-id='pin']");
     pinCards.forEach((card) => {
         if (card.querySelector("video")) return;
         const pinLink = card.querySelector("a");
-        if (!pinLink || processedPins.has(pinLink.href)) return;
+        if (!pinLink || processedHumanPins.has(pinLink.href)) return;
         const url = pinLink.href;
-        const debouncedCheck = debounce(() => processPinLink(url, card), 200);
-        debouncedCheck();
+        debouncedCheck(url, card);
     });
 };
 
