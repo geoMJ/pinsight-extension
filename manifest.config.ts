@@ -17,7 +17,7 @@ export default defineManifest({
     content_scripts: [
         {
             js: ["src/content/main.ts"],
-            matches: ["https://*.pinterest.com/", "https://*.pinterest.com/search/*"],
+            matches: ["https://*.pinterest.com/*"],
         },
     ],
 });
