@@ -20,4 +20,7 @@ export default defineManifest({
             matches: ["https://*.pinterest.com/*"],
         },
     ],
+    background: {
+        service_worker: "src/service-workers/background.ts",
+    }, 
 });
