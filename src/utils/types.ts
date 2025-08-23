@@ -7,7 +7,7 @@ export interface ExtensionOptions {
 }
 
 export const defaultOptions: ExtensionOptions = {
-    blockingMode: "hidden",
+    blockingMode: "labelled",
 };
 
 export interface ExtensionStorage {
@@ -15,7 +15,7 @@ export interface ExtensionStorage {
 }
 
 export interface ExtensionStorageRoot {
-    [EXTENSION_STORAGE_KEY]: ExtensionStorage;
+    [EXTENSION_STORAGE_KEY]: ExtensionStorage | undefined;
 }
 
 export interface ChromeMessage {

@@ -1,3 +1,59 @@
 .Hb7 {
-   transition: none !important;
+    transition: none !important;
+}
+
+[data-ai-pin="hidden"] {
+    display: none !important;
+}
+
+[data-ai-pin="hidden"] + div {
+    height: 1px;
+    overflow: hidden;
+}
+
+[data-ai-pin="blurred"] [data-test-id="contentLayer"] {
+    visibility: hidden;
+}
+
+[data-ai-pin="blurred"] a {
+    pointer-events: none;
+}
+
+[data-ai-pin="blurred"] img {
+    filter: blur(12px);
+    opacity: 0.5;
+}
+
+[data-ai-pin="blurred"] .unblur-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: none;
+    color: white;
+    font-weight: 600;
+    padding: 8px 16px;
+    white-space: nowrap;
+    border: 1px solid white;
+    border-radius: 8px;
+    outline: none;
+}
+
+[data-ai-pin="labelled"]::after {
+    content: "AI Content";
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #e60023;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 16px;
+    pointer-events: none;
+}
+
+[data-ai-pin="labelled"]:hover::after {
+    visibility: hidden;
 }

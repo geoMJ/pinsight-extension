@@ -82,13 +82,15 @@ const changePinDisplayMode = (
     pinWrapper: HTMLDivElement,
     mode: PinDisplayMode
 ) => {
+    const unblurButton = document.createElement("button");
+    unblurButton.className = "unblur-button";
+    unblurButton.textContent = "Show AI Content";
+    unblurButton.addEventListener("click", () => {
+        pinWrapper.setAttribute("data-ai-pin", "labelled");
+        unblurButton.remove();
+    });
+    pinWrapper.appendChild(unblurButton);
     pinWrapper.setAttribute("data-ai-pin", mode);
-    // pinWrapper.style.display = "none";
-    // const footer = pinWrapper.nextElementSibling as HTMLDivElement | null;
-    // if (footer) {
-    //     footer.style.height = "1px";
-    //     footer.style.overflow = "hidden";
-    // }
 };
 
 const fetchPinPage = (url: string): Promise<string | null> => {
