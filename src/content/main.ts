@@ -4,31 +4,56 @@
  * Thanks for checking out my project!
  */
 
+import { PinDisplayMode } from "@/utils/types";
+import { getOptions } from "./options";
+
+const state = {
+    currentPinDisplayMode: "hidden" as PinDisplayMode,
+};
+
 /**********  QUEUE MECHANISM **********/
 
 /* Holds pins that need to be checked (their url, and wrapper element) */
+const MAX_CONCURRENT_CHECKS = 3;
 const pinQueue: [string, HTMLDivElement][] = [];
-let isProcessing = false;
+let currentChecks = 0;
+//let isProcessing = false;
+
+// TODO Maybe set this as an option ?
 
 /** Utility function used to avoid too many requests to the server when checking pins */
-const processPinQueue = async () => {
-    if (isProcessing) return;
-    isProcessing = true;
+// const processPinQueue = async () => {
+//     if (isProcessing) return;
+//     isProcessing = true;
 
-    while (pinQueue.length > 0) {
+//     while (pinQueue.length > 0) {
+//         const [url, wrapper] = pinQueue.shift() as [string, HTMLDivElement];
+//         await processPinLink(url, wrapper);
+
+//         await new Promise((resolve) => setTimeout(resolve, 100));
+//     }
+
+//     isProcessing = false;
+// };
+
+const processPinQueueConcurrently = async () => {
+    while (pinQueue.length > 0 && currentChecks < MAX_CONCURRENT_CHECKS) {
+        currentChecks++;
         const [url, wrapper] = pinQueue.shift() as [string, HTMLDivElement];
-        await processPinLink(url, wrapper);
-
+        processPinLink(url, wrapper).finally(() => {
+            currentChecks--;
+            processPinQueueConcurrently();
+        });
         await new Promise((resolve) => setTimeout(resolve, 100));
     }
-
-    isProcessing = false;
 };
+
+const processingFunction = processPinQueueConcurrently;
 
 /** Adds a pin to the queue and calls the processing function if nothing else is being checked at the moment */
 const enqueuePinCheck = (pinUrl: string, pinWrapper: HTMLDivElement) => {
     pinQueue.push([pinUrl, pinWrapper]);
-    if (!isProcessing) processPinQueue();
+    processingFunction();
 };
 
 /** Map to store and classify processed pins so we don't re-check them (and re-send requests) */
@@ -53,24 +78,31 @@ const parseNodes = (nodes: NodeList) => {
 /**********  PIN REMOVAL LOGIC **********/
 
 /** Hides the pin (the other grid elements will adjust accordingly) */
-const removePin = (pinWrapper: HTMLDivElement) => {
-    pinWrapper.style.display = "none";
-    const footer = pinWrapper.nextElementSibling as HTMLDivElement | null;
-    if (footer) {
-        footer.style.height = "1px";
-        footer.style.overflow = "hidden";
-    }
+const changePinDisplayMode = (
+    pinWrapper: HTMLDivElement,
+    mode: PinDisplayMode
+) => {
+    pinWrapper.setAttribute("data-ai-pin", mode);
+    // pinWrapper.style.display = "none";
+    // const footer = pinWrapper.nextElementSibling as HTMLDivElement | null;
+    // if (footer) {
+    //     footer.style.height = "1px";
+    //     footer.style.overflow = "hidden";
+    // }
 };
 
 const fetchPinPage = (url: string): Promise<string | null> => {
     return new Promise((resolve) => {
-        chrome.runtime.sendMessage({ type: "CHECK_PIN_PAGE", url }, (response) => {
-            if (response && response.success) {
-                resolve(response.html);
-            } else {
-                resolve(null);
+        chrome.runtime.sendMessage(
+            { type: "CHECK_PIN_PAGE", url },
+            (response) => {
+                if (response && response.success) {
+                    resolve(response.html);
+                } else {
+                    resolve(null);
+                }
             }
-        });
+        );
     });
 };
 
@@ -79,7 +111,10 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
     const parser = new DOMParser();
     const pinPageHTML = await fetchPinPage(pinUrl);
     if (!pinPageHTML) {
-        console.error("Problem occured when checking if pin is AI-generated", pinUrl);
+        console.error(
+            "Problem occured when checking if pin is AI-generated",
+            pinUrl
+        );
         return;
     }
     const doc = parser.parseFromString(pinPageHTML, "text/html");
@@ -88,7 +123,8 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
         doc.querySelector("[data-test-id*='ai-generated']") !== null;
     processedPins.set(pinUrl, contentIsAI ? "ai" : "human");
 
-    if (contentIsAI) return removePin(pinWrapper);
+    if (contentIsAI)
+        return changePinDisplayMode(pinWrapper, state.currentPinDisplayMode);
 };
 
 /** Main logic to process pins (or not if already processed) */
@@ -104,7 +140,8 @@ const updatePinGrid = (pinWrapper: HTMLDivElement) => {
     const url = pinLink.href;
 
     if (!processedPins.has(url)) return enqueuePinCheck(url, pinWrapper);
-    else if (processedPins.get(url) === "ai") return removePin(pinWrapper);
+    else if (processedPins.get(url) === "ai")
+        return changePinDisplayMode(pinWrapper, state.currentPinDisplayMode);
 };
 
 /**********  MUTATION OBSERVER ***********/
@@ -118,10 +155,18 @@ const observer = new MutationObserver((mutations) => {
 
 /********** BEGINNING ***********/
 
-const reactRoot = document.getElementById("__PWS_ROOT__");
-if (reactRoot) {
-    observer.observe(reactRoot, { childList: true, subtree: true });
-    // We need to do one round of manual check for the first few pins that won't get caught in the observer's mutations
-    const pinList = document.querySelectorAll("[data-grid-item='true']");
-    if (pinList) parseNodes(pinList);
-}
+const initContentScript = async () => {
+    // Getting options, display mode only for now
+    const options = await getOptions();
+    state.currentPinDisplayMode = options.blockingMode;
+
+    const reactRoot = document.getElementById("__PWS_ROOT__");
+    if (reactRoot) {
+        observer.observe(reactRoot, { childList: true, subtree: true });
+        // We need to do one round of manual check for the first few pins that won't get caught in the observer's mutations
+        const pinList = document.querySelectorAll("[data-grid-item='true']");
+        if (pinList) parseNodes(pinList);
+    }
+};
+
+initContentScript();

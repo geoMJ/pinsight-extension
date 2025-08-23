@@ -17,10 +17,12 @@ export default defineManifest({
     content_scripts: [
         {
             js: ["src/content/main.ts"],
+            css: ["src/content/injected.css"],
             matches: ["https://*.pinterest.com/*"],
         },
     ],
     background: {
         service_worker: "src/service-workers/background.ts",
     }, 
+    permissions: ["storage"],
 });
