@@ -5,14 +5,12 @@ const displayModeRadios = document.getElementsByName("display-option") as NodeLi
 
 const checkDisplayModeRadio = async () => {
     const mode = await getOption("displayMode");
-    console.log(mode)
     displayModeRadios.forEach((input) => {
         input.checked = input.value === mode;
     });
 };
 
 const initPopup = async () => {
-
     await checkDisplayModeRadio();
 
     reloadBtn.addEventListener("click", () => {
@@ -30,6 +28,17 @@ const initPopup = async () => {
                 setOption("displayMode", selectedValue);
             }
         });
+    });
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs[0].id) {
+            chrome.tabs.sendMessage(tabs[0].id, { type: "GET_AI_PINS_COUNT" }, (response) => {
+                if (response && response.type === "AI_PINS_COUNT") {
+                    const aiCountSpan = document.getElementById("ai-count") as HTMLSpanElement;
+                    aiCountSpan.textContent = response.count.toString();
+                }
+            });
+        }
     });
 };
 

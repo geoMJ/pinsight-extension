@@ -1,6 +1,7 @@
 import { EXTENSION_STORAGE_KEY } from "./storage";
 
 export type PinDisplayMode = "hidden" | "blurred" | "labelled";
+export type MessageType = "CHECK_PIN_PAGE" | "GET_AI_PINS_COUNT";
 
 export interface ExtensionOptions {
     displayMode: PinDisplayMode;
@@ -19,6 +20,6 @@ export interface ExtensionStorageRoot {
 }
 
 export interface ChromeMessage {
-    type: string;
-    url: string;
+    type: MessageType;
+    url?: string;
 }
