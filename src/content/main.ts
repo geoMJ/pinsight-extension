@@ -160,7 +160,7 @@ const observer = new MutationObserver((mutations) => {
 const initContentScript = async () => {
     // Getting options, display mode only for now
     const options = await getOptions();
-    state.currentPinDisplayMode = options.blockingMode;
+    state.currentPinDisplayMode = options.displayMode;
 
     const reactRoot = document.getElementById("__PWS_ROOT__");
     if (reactRoot) {

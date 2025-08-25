@@ -3,11 +3,11 @@ import { EXTENSION_STORAGE_KEY } from "./storage";
 export type PinDisplayMode = "hidden" | "blurred" | "labelled";
 
 export interface ExtensionOptions {
-    blockingMode: PinDisplayMode;
+    displayMode: PinDisplayMode;
 }
 
 export const defaultOptions: ExtensionOptions = {
-    blockingMode: "labelled",
+    displayMode: "labelled",
 };
 
 export interface ExtensionStorage {

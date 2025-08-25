@@ -2,47 +2,49 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
-        <link rel="stylesheet" href="style.css">
+        <title>AI Pins Blocker</title>
+        <link rel="stylesheet" href="style.css" />
     </head>
     <body>
         <div class="popup-wrapper">
-                <div class="header">
-                    <h1>Ai Pins Blocker</h1>
-                    <p>Hello!</p>
-                </div>
-                <section class="container status-container">
-                    <div class="status-text">
-                        <h2>Extension status</h2>
-                        <p>Enabled</p>
-                    </div>
-                    <button class="toggle-switch">switch</button>
-                </section>
-                <section class="container pin-display-options">
-                    <h2>Content display mode</h2>
-                    <div class="pin-display-radio-group">
-                        <div class="display-option">
-                            <input type="radio" id="display-option-1" name="display-choice" value="Labelled" />
-                            <label for="display-option-1">Labelled</label>
-                        </div>
-                        <div class="display-option">
-                            <input type="radio" id="display-option-2" name="display-choice" value="Blurred" />
-                            <label for="display-option-2">Blurred</label>
-                        </div>
-                        <div class="display-option">
-                            <input type="radio" id="display-option-3" name="display-choice" value="Hidden" />
-                            <label for="display-option-1">Hidden</label>
-                        </div>
-                    </div>
-                </section>
-                <section>
-                    <button class="container">Reload</button>
-                </section>
-                <section class="container ai-pins-counter">
-                    <p>xxx AI pins were found on this page!</p>
-                </section>
-                <footer class="footer">
-                    <p>Thanks for using this extension!</p>
-                </footer>
+            <div class="header">
+                <h1>Ai Pins Blocker</h1>
+                <p>Hello!</p>
             </div>
+            <section class="container status-container">
+                <div class="status-text">
+                    <h2>Extension status</h2>
+                    <p>Enabled</p>
+                </div>
+                <button class="toggle-switch">switch</button>
+            </section>
+            <section class="container pin-display-options">
+                <h2>Content display mode</h2>
+                <div class="pin-display-radio-group">
+                    <label for="display-option-1">
+                        <input type="radio" id="display-option-1" name="display-option" value="labelled" />
+                        <div>Labelled</div>
+                    </label>
+                    <label for="display-option-2">
+                        <input type="radio" id="display-option-2" name="display-option" value="blurred" />
+                        <div>Blurred</div>
+                    </label>
+                    <label for="display-option-3">
+                        <input type="radio" id="display-option-3" name="display-option" value="hidden" />
+                        <div>Hidden</div>
+                    </label>
+                </div>
+            </section>
+            <section>
+                <button class="container" id="page-reload-btn">Reload</button>
+            </section>
+            <section class="container ai-pins-counter">
+                <p>xxx AI pins were found on this page!</p>
+            </section>
+            <footer class="footer">
+                <p>Thanks for using this extension!</p>
+            </footer>
+        </div>
+        <script type="module" src="popup.ts"></script>
     </body>
 </html>
