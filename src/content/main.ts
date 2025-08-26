@@ -9,6 +9,7 @@ import { getOptions } from "./options";
 
 const state = {
     currentPinDisplayMode: "hidden" as PinDisplayMode,
+    extensionEnabled: true,
     aiPinsCounter: 0,
 };
 
@@ -143,6 +144,9 @@ const initContentScript = async () => {
     // Getting options, display mode only for now
     const options = await getOptions();
     state.currentPinDisplayMode = options.displayMode;
+    state.extensionEnabled = options.extensionEnabled;
+
+    if (!state.extensionEnabled) return;
 
     const reactRoot = document.getElementById("__PWS_ROOT__");
     if (reactRoot) {

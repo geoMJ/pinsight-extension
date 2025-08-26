@@ -4,7 +4,6 @@
     --primary: #d53c89;
     --secondary: #f177b4;
     --accent: #fd45a1;
-    --primary-10: rgb(from var(--primary) r g b / 0.1);
     --light-grey: #e5e7eb;
     --b-radius: 12px;
 }
@@ -41,6 +40,11 @@ label,
 input,
 button {
     cursor: pointer;
+}
+
+.greyed-out {
+    opacity: 0.5;
+    pointer-events: none;
 }
 
 .header,
@@ -115,7 +119,7 @@ button {
 }
 
 .pin-display-radio-group label:has(input:checked) {
-    background-color: var(--primary-10);
+    background-color: var(--background);
 }
 
 .pin-display-radio-group input {
@@ -146,3 +150,27 @@ button {
     height: 1.25rem;
     fill: var(--accent);
 }
+
+#page-reload-btn.reload-needed {
+    border: 1px solid rgb(from var(--accent) r g b / 0.3);
+    animation: pulse 1s infinite;
+}
+
+#ai-count {
+    font-weight: bold;
+    color: var(--primary);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgb(from var(--accent) r g b / 0.5);
+    }
+
+    70% {
+        box-shadow: 0 0 0 4px transparent;
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 transparent
+    }
+}         
