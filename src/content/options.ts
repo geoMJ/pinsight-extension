@@ -6,12 +6,13 @@ export const getOptions = async (): Promise<ExtensionOptions> => {
     return options || defaultOptions;
 };
 
-export const getOption = async (key: keyof ExtensionOptions): Promise<any> => {
+export const getOption = async <K extends keyof ExtensionOptions>(key: K): Promise<ExtensionOptions[K]> => {
     const options = await getOptions();
-    return options[key];
+    return options[key] ?? defaultOptions[key];
 };
 
-export const setOption = async (key: keyof ExtensionOptions, value: any) => {
+
+export const setOption = async <K extends keyof ExtensionOptions>(key: K, value: ExtensionOptions[K]) => {
     const options = await getOptions();
     options[key] = value;
     await setValueInStorage("options", options);

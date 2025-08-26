@@ -1,7 +1,10 @@
 import { getOption, setOption } from "@/content/options";
+import { PinDisplayMode } from "@/utils/types";
 
 const reloadBtn = document.getElementById("page-reload-btn") as HTMLButtonElement;
 const displayModeRadios = document.getElementsByName("display-option") as NodeListOf<HTMLInputElement>;
+const extensionToggle = document.getElementById("extension-toggle") as HTMLInputElement;
+const extensionStatus = document.getElementById("extension-status") as HTMLParagraphElement;
 
 const checkDisplayModeRadio = async () => {
     const mode = await getOption("displayMode");
@@ -10,8 +13,20 @@ const checkDisplayModeRadio = async () => {
     });
 };
 
+const checkExtensionToggle = async () => {
+    const isEnabled = await getOption("extensionEnabled");
+    extensionToggle.checked = isEnabled;
+    extensionStatus.textContent = isEnabled ? "Enabled" : "Disabled";
+};
+
 const initPopup = async () => {
     await checkDisplayModeRadio();
+    await checkExtensionToggle();
+
+    extensionToggle.addEventListener("change", () => {
+        extensionStatus.textContent = extensionToggle.checked ? "Enabled" : "Disabled";
+        setOption("extensionEnabled", extensionToggle.checked);
+    });
 
     reloadBtn.addEventListener("click", () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -24,7 +39,7 @@ const initPopup = async () => {
     displayModeRadios.forEach((input: HTMLInputElement) => {
         input.addEventListener("change", () => {
             if (input.checked) {
-                const selectedValue = input.value;
+                const selectedValue = input.value as PinDisplayMode;
                 setOption("displayMode", selectedValue);
             }
         });
