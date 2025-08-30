@@ -1,6 +1,5 @@
-import { defaultOptions, ExtensionOptions, ExtensionStorage, ExtensionStorageRoot } from "./types";
-
-export const EXTENSION_STORAGE_KEY = "pinterest-ai-blocker-test";
+import { defaultOptions, EXTENSION_STORAGE_KEY } from "./constants";
+import { ExtensionOptions, ExtensionStorage, ExtensionStorageRoot } from "./types";
 
 export const getValueFromStorage = async (key: keyof ExtensionStorage): Promise<ExtensionOptions | null> => {
     const extensionStorage: ExtensionStorageRoot = await chrome.storage.local.get(EXTENSION_STORAGE_KEY);

@@ -6,6 +6,7 @@
 
 import { PinDisplayMode } from "@/utils/types";
 import { getOptions } from "./options";
+import { aiFlags } from "@/utils/constants";
 
 const state = {
     currentPinDisplayMode: "hidden" as PinDisplayMode,
@@ -76,6 +77,8 @@ const parseNodes = (nodes: NodeList) => {
 
 /** Hides the pin (the other grid elements will adjust accordingly) */
 const changePinDisplayMode = (pinWrapper: HTMLDivElement, mode: PinDisplayMode) => {
+    pinWrapper.setAttribute("data-ai-pin", mode);
+    if (mode !== "blurred") return;
     const unblurButton = document.createElement("button");
     unblurButton.className = "unblur-button";
     unblurButton.textContent = "Show AI Content";
@@ -84,7 +87,6 @@ const changePinDisplayMode = (pinWrapper: HTMLDivElement, mode: PinDisplayMode) 
         unblurButton.remove();
     });
     pinWrapper.appendChild(unblurButton);
-    pinWrapper.setAttribute("data-ai-pin", mode);
 };
 
 const fetchPinPage = (url: string): Promise<string | null> => {
@@ -109,7 +111,9 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
     }
     const doc = parser.parseFromString(pinPageHTML, "text/html");
 
-    const contentIsAI = doc.querySelector("[data-test-id*='ai-generated']") !== null;
+    const contentIsAI =
+        doc.querySelector("[data-test-id*='ai-generated']") !== null ||
+        aiFlags.some((flag) => pinPageHTML.includes(flag));
     processedPins.set(pinUrl, contentIsAI ? "ai" : "human");
 
     if (contentIsAI) {

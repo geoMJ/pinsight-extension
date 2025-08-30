@@ -1,9 +1,10 @@
 :root {
-    --text: #5e5559;
-    --background: #fff5fa;
-    --primary: #d53c89;
-    --secondary: #f177b4;
-    --accent: #fd45a1;
+    --text: #382528;
+    --background: #faf4f5;
+    --primary: #e60023;
+    --secondary: #dc939e;
+    --accent: #d66a7b;
+
     --light-grey: #e5e7eb;
     --b-radius: 12px;
 }
@@ -22,10 +23,6 @@ body {
     color: var(--text);
     background-color: var(--background);
 }
-h1,
-h2 {
-    margin-bottom: 0.4em;
-}
 
 h1 {
     font-size: 1.5rem;
@@ -33,7 +30,7 @@ h1 {
 }
 
 h2 {
-    font-size: 1rem;
+    font-size: 1em;
 }
 
 label,
@@ -56,10 +53,9 @@ button {
 .popup-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.2rem;
     width: 320px;
     padding: 1rem;
-    border: 1px dashed black;
 }
 
 .popup-wrapper .container {
@@ -68,47 +64,47 @@ button {
     border: 1px solid rgb(from var(--secondary) r g b / 0.1);
     border-radius: var(--b-radius);
     background-color: white;
-    box-shadow: 0 1px 2px 0 rgb(from var(--secondary) r g b / 0.1);
+    box-shadow: 0 1px 2px -1px var(--secondary);
 }
 
 .status-container {
     display: flex;
     justify-content: space-between;
-	align-items: center;;
+    align-items: center;
 }
 
 .toggle-switch {
-	display: block;
-	appearance: none;
-	position: relative;
-	height: 24px;
-	width: 48px;
-	background: var(--light-grey);
-	border-radius: var(--b-radius);
+    display: block;
+    appearance: none;
+    position: relative;
+    height: 24px;
+    width: 48px;
+    background: var(--light-grey);
+    border-radius: var(--b-radius);
 }
 
 .toggle-switch::before {
-	position: absolute;
-	content: "";
-	inset: 0 0;
-	width: 22px;
-	height: 22px;
-	border: 1px solid var(--light-grey);
-	border-radius: var(--b-radius);
-	background: white;
-	transition: 0.3s;
+    position: absolute;
+    content: "";
+    inset: 0 0;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--light-grey);
+    border-radius: var(--b-radius);
+    background: white;
+    transition: 0.3s;
 }
 
 .toggle-switch:checked {
-	background: var(--secondary);
+    background: var(--secondary);
 }
 
 .toggle-switch:checked::before {
-	inset: 0 50%;
-	border-color: var(--secondary);
+    inset: 0 50%;
+    border-color: var(--secondary);
 }
 
-.pin-display-radio-group label {
+.display-option-wrapper {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -118,8 +114,8 @@ button {
     transition: 0.1s;
 }
 
-.pin-display-radio-group label:has(input:checked) {
-    background-color: var(--background);
+.display-option-wrapper:has(input:checked) {
+    background-color: rgb(from var(--primary) r g b / 0.05);
 }
 
 .pin-display-radio-group input {
@@ -135,6 +131,14 @@ button {
 .pin-display-radio-group input:checked {
     border-color: var(--secondary);
     background-color: var(--secondary);
+}
+
+.display-option-title {
+    font-weight: 600;
+}
+
+.display-option-description {
+    font-size: 0.75rem;
 }
 
 #page-reload-btn {
@@ -161,6 +165,10 @@ button {
     color: var(--primary);
 }
 
+.footer {
+    font-size: 0.875em;
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgb(from var(--accent) r g b / 0.5);
@@ -171,6 +179,6 @@ button {
     }
 
     100% {
-        box-shadow: 0 0 0 0 transparent
+        box-shadow: 0 0 0 0 transparent;
     }
-}         
+}

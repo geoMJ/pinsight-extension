@@ -1,5 +1,6 @@
+import { defaultOptions } from "@/utils/constants";
 import { getValueFromStorage, setValueInStorage } from "@/utils/storage";
-import { defaultOptions, ExtensionOptions } from "@/utils/types";
+import { ExtensionOptions } from "@/utils/types";
 
 export const getOptions = async (): Promise<ExtensionOptions> => {
     const options = await getValueFromStorage("options");
