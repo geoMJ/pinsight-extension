@@ -1,0 +1,10 @@
+{
+    "extensionName": {
+        "message": "PinSight -  Cacher l'IA sur Pinterest",
+        "description": "Nom de l'extension"
+    },
+    "extensionDescription": {
+        "message": "Détectez le contenu généré par l'IA sur Pinterest et contrôlez la façon dont les épingles IA sont affichées dans votre fil.",
+        "description": "Description de l'extension"
+    }
+}

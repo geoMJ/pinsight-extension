@@ -1,0 +1,10 @@
+{
+    "extensionName": {
+        "message": "PinSight - Control de IA en Pinterest",
+        "description": "Nombre de la extensión"
+    },
+    "extensionDescription": {
+        "message": "Detecta contenido generado por IA en Pinterest y controla cómo se muestran los pines de IA en tu feed.",
+        "description": "Descripción de la extensión"
+    }
+}

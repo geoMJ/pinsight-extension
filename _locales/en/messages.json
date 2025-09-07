@@ -1,0 +1,10 @@
+{
+    "extensionName": {
+        "message": "PinSight - Pinterest AI Control",
+        "description": "Name of the extension"
+    },
+    "extensionDescription": {
+        "message": "Spot AI-generated content on Pinterest and control how AI pins are displayed in your feed.",
+        "description": "Description for the extension"
+    }
+}
