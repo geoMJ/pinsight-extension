@@ -1,5 +1,6 @@
 import { getOption, setOption } from "@/content/options";
 import { PinDisplayMode } from "@/utils/types";
+import "./style.css"
 
 const contentContainers = document.querySelectorAll(".content");
 const extensionToggle = document.getElementById("extension-toggle") as HTMLInputElement;

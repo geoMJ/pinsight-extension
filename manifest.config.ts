@@ -1,4 +1,4 @@
-import { defineManifest } from '@crxjs/vite-plugin'
+import { defineDynamicResource, defineManifest } from '@crxjs/vite-plugin'
 import pkg from './package.json'
 
 export default defineManifest({
@@ -29,9 +29,16 @@ export default defineManifest({
             matches: ["https://*.pinterest.com/*"],
         },
     ],
+    web_accessible_resources: [
+        {
+            resources: ["src/content/injected.css"],
+            matches: ["https://*.pinterest.com/*"],
+        }
+    ],
     background: {
         service_worker: "src/service-workers/background.ts",
     },
     permissions: ["storage", "tabs"],
+    host_permissions: ["https://*.pinterest.com/*"],
     default_locale: "en",
 });
