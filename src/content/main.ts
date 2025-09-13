@@ -110,10 +110,11 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
         return;
     }
     const doc = parser.parseFromString(pinPageHTML, "text/html");
+    const closeUpDiv = doc.querySelector("div[data-test-id='closeup-body']") as HTMLDivElement;
 
     const contentIsAI =
         doc.querySelector("[data-test-id*='ai-generated']") !== null ||
-        aiFlags.some((flag) => pinPageHTML.includes(flag));
+        aiFlags.some((flag) => closeUpDiv.innerText.toLowerCase().includes(flag));
     processedPins.set(pinUrl, contentIsAI ? "ai" : "human");
 
     if (contentIsAI) {
