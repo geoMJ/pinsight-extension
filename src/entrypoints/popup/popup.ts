@@ -1,4 +1,4 @@
-import { getOption, setOption } from "@/content/options";
+import { getOption, setOption } from "@/utils/options";
 import { PinDisplayMode } from "@/utils/types";
 import "./style.css"
 

@@ -4,9 +4,18 @@
  * Thanks for checking out my project!
  */
 
+import { defineContentScript } from 'wxt/utils/define-content-script';
 import { PinDisplayMode } from "@/utils/types";
-import { getOptions } from "./options";
+import { getOptions } from "@/utils/options";
 import { aiFlags } from "@/utils/constants";
+import "./injected.content.css";
+
+export default defineContentScript({
+    matches: ["https://*.pinterest.com/*"],
+    main() {
+        initContentScript();
+    },
+});
 
 const state = {
     currentPinDisplayMode: "hidden" as PinDisplayMode,
@@ -65,10 +74,15 @@ const processedPins = new Map<string, "human" | "ai">();
 /** Parses the nodes that are inside the Pinterest grid and processes them */
 const parseNodes = (nodes: NodeList) => {
     const validBodes = Array.from(nodes).filter(
-        (node) => node instanceof HTMLDivElement && node.matches("[data-grid-item='true']")
+        (node) =>
+            node instanceof HTMLDivElement &&
+            node.matches("[data-grid-item='true']"),
     ) as HTMLDivElement[];
     for (const node of validBodes) {
-        const pinWrapper = (node.querySelector("[data-test-id='pinWrapper']") as HTMLDivElement) || null;
+        const pinWrapper =
+            (node.querySelector(
+                "[data-test-id='pinWrapper']",
+            ) as HTMLDivElement) || null;
         if (pinWrapper) updatePinGrid(pinWrapper);
     }
 };
@@ -76,7 +90,10 @@ const parseNodes = (nodes: NodeList) => {
 /**********  PIN REMOVAL LOGIC **********/
 
 /** Hides the pin (the other grid elements will adjust accordingly) */
-const changePinDisplayMode = (pinWrapper: HTMLDivElement, mode: PinDisplayMode) => {
+const changePinDisplayMode = (
+    pinWrapper: HTMLDivElement,
+    mode: PinDisplayMode,
+) => {
     pinWrapper.setAttribute("data-ai-pin", mode);
     if (mode !== "blurred") return;
     const unblurButton = document.createElement("button");
@@ -91,13 +108,16 @@ const changePinDisplayMode = (pinWrapper: HTMLDivElement, mode: PinDisplayMode) 
 
 const fetchPinPage = (url: string): Promise<string | null> => {
     return new Promise((resolve) => {
-        chrome.runtime.sendMessage({ type: "CHECK_PIN_PAGE", url }, (response) => {
-            if (response && response.success) {
-                resolve(response.html);
-            } else {
-                resolve(null);
-            }
-        });
+        chrome.runtime.sendMessage(
+            { type: "CHECK_PIN_PAGE", url },
+            (response) => {
+                if (response && response.success) {
+                    resolve(response.html);
+                } else {
+                    resolve(null);
+                }
+            },
+        );
     });
 };
 
@@ -106,15 +126,22 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
     const parser = new DOMParser();
     const pinPageHTML = await fetchPinPage(pinUrl);
     if (!pinPageHTML) {
-        console.error("Problem occured when checking if pin is AI-generated", pinUrl);
+        console.error(
+            "Problem occured when checking if pin is AI-generated",
+            pinUrl,
+        );
         return;
     }
     const doc = parser.parseFromString(pinPageHTML, "text/html");
-    const closeUpDiv = doc.querySelector("div[data-test-id='closeup-body']") as HTMLDivElement;
+    const closeUpDiv = doc.querySelector(
+        "div[data-test-id='CloseupMainPin']",
+    ) as HTMLDivElement;
 
     const contentIsAI =
         doc.querySelector("[data-test-id*='ai-generated']") !== null ||
-        aiFlags.some((flag) => closeUpDiv.innerText.toLowerCase().includes(flag));
+        aiFlags.some((flag) =>
+            closeUpDiv.innerText.toLowerCase().includes(flag),
+        );
     processedPins.set(pinUrl, contentIsAI ? "ai" : "human");
 
     if (contentIsAI) {
@@ -126,12 +153,18 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
 /** Main logic to process pins (or not if already processed) */
 const updatePinGrid = (pinWrapper: HTMLDivElement) => {
     const pinLink = pinWrapper.querySelector("a");
-    if (pinWrapper.querySelector("video") || !pinLink || !pinLink.href.includes("/pin/")) return;
+    if (
+        pinWrapper.querySelector("video") ||
+        !pinLink ||
+        !pinLink.href.includes("/pin/")
+    )
+        return;
 
     const url = pinLink.href;
 
     if (!processedPins.has(url)) return enqueuePinCheck(url, pinWrapper);
-    else if (processedPins.get(url) === "ai") return changePinDisplayMode(pinWrapper, state.currentPinDisplayMode);
+    else if (processedPins.get(url) === "ai")
+        return changePinDisplayMode(pinWrapper, state.currentPinDisplayMode);
 };
 
 /**********  MUTATION OBSERVER ***********/
@@ -168,5 +201,3 @@ const initContentScript = async () => {
         }
     });
 };
-
-initContentScript();

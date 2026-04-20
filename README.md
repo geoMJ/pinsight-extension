@@ -17,7 +17,7 @@ I made this mostly as a personal project and learning experience, but I found ou
 
 ## Use locally
 
-[CRXJS](https://github.com/crxjs/chrome-extension-tools/blob/main/README.md) was used for this project. If you want to contribute or just develop and run the extension on your machine, you can just clone the repo, then install packages with
+This project now uses [WXT](https://github.com/wxt-dev/wxt) as it's development framework! If you want to contribute or just develop and run the extension on your machine, you can just clone the repo, then install packages with
 ```shell
 npm install
 ```
@@ -27,6 +27,6 @@ and run the developpement server (Vite)
 npm run dev
 ```
 
-For more in-depth information on how to test the extension while developing or any other CRXJS related question, [their docs](https://crxjs.dev/guide/installation/create-crxjs) are great.
+For more in-depth information on how to test the extension while developing or any other CRXJS related question, [their docs](https://wxt.dev/guide/installation.html) are great.
 
 Thank you for stopping by! :)
