@@ -1,6 +1,6 @@
 {
     "extends": "./.wxt/tsconfig.json",
     "compilerOptions": {
-        "types": ["vite/client", "chrome"]
+        "types": ["vite/client"]
     }
 }

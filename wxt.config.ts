@@ -26,7 +26,7 @@ export default defineConfig({
                 },
             },
             default_locale: "en",
-            permissions: ["storage", "tabs"],
+            permissions: ["storage", "tabs", "activeTab"],
             host_permissions: ["https://*.pinterest.com/*"],
             web_accessible_resources: [
                 {

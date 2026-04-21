@@ -1,6 +1,7 @@
 import { getOption, setOption } from "@/utils/options";
 import { PinDisplayMode } from "@/utils/types";
-import "./style.css"
+import "./style.css";
+import { Browser, browser } from "wxt/browser";
 
 const contentContainers = document.querySelectorAll(".content");
 const extensionToggle = document.getElementById("extension-toggle") as HTMLInputElement;
@@ -9,7 +10,7 @@ const displayModeRadios = document.getElementsByName("display-option") as NodeLi
 const reloadBtn = document.getElementById("page-reload-btn") as HTMLButtonElement;
 const aiCountSpan = document.getElementById("ai-count") as HTMLSpanElement;
 
-const onPinterest = (tab: chrome.tabs.Tab) => tab.url && tab.url.includes("pinterest.com");
+const onPinterest = (tab: Browser.tabs.Tab) => tab.url && tab.url.includes("pinterest.com");
 
 const checkDisplayModeRadio = async () => {
     const mode = await getOption("displayMode");
@@ -27,7 +28,7 @@ const checkExtensionToggle = async () => {
     });
 };
 
-const showReloadHint = (tab: chrome.tabs.Tab) => {
+const showReloadHint = (tab: Browser.tabs.Tab) => {
     if (onPinterest(tab)) {
         reloadBtn.classList.add("reload-needed");
     }
@@ -39,7 +40,10 @@ const resetReactiveElements = () => {
 };
 
 const initPopup = async () => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+    });
     await checkDisplayModeRadio();
     await checkExtensionToggle();
 
@@ -62,21 +66,25 @@ const initPopup = async () => {
         });
     });
 
-    reloadBtn.addEventListener("click", () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0].id) {
-                chrome.tabs.reload(tabs[0].id);
-                resetReactiveElements();
-            }
+    reloadBtn.addEventListener("click", async () => {
+        const tabs = await browser.tabs.query({
+            active: true,
+            currentWindow: true,
         });
+        if (tabs[0].id) {
+            browser.tabs.reload(tabs[0].id);
+            resetReactiveElements();
+        }
     });
 
     if (onPinterest(tab) && tab.id) {
-        chrome.tabs.sendMessage(tab.id, { type: "GET_AI_PINS_COUNT" }, (response) => {
-            if (response && response.type === "AI_PINS_COUNT") {
-                aiCountSpan.textContent = response.count.toString();
-            }
+        const response = await browser.tabs.sendMessage(tab.id, {
+            type: "GET_AI_PINS_COUNT",
         });
+
+        if (response && response.type === "AI_PINS_COUNT") {
+            aiCountSpan.textContent = response.count.toString();
+        }
     }
 };
 
