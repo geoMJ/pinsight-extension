@@ -123,8 +123,10 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
         return;
     }
     const doc = parser.parseFromString(pinPageHTML, "text/html");
-    const closeUpDiv = doc.querySelector("div[data-test-id='closeup-body']") as HTMLDivElement;
-
+    const closeUpDiv = doc.querySelector(
+        "div[data-test-id='closeup-body'],div[data-test-id='closeup-body-landscape']",
+    ) as HTMLDivElement;
+    if (!closeUpDiv) return;
     const contentIsAI =
         doc.querySelector("[data-test-id*='ai-generated']") !== null ||
         aiFlags.some((flag) => closeUpDiv.innerText.toLowerCase().includes(flag));
@@ -139,7 +141,13 @@ const processPinLink = async (pinUrl: string, pinWrapper: HTMLDivElement) => {
 /** Main logic to process pins (or not if already processed) */
 const updatePinGrid = (pinWrapper: HTMLDivElement) => {
     const pinLink = pinWrapper.querySelector("a");
-    if (pinWrapper.querySelector("video") || !pinLink || !pinLink.href.includes("/pin/")) return;
+    if (
+        pinWrapper.querySelector("video") ||
+        pinWrapper.querySelector("div[data-test-id='pinrep-video']") ||
+        !pinLink ||
+        !pinLink.href.includes("/pin/")
+    )
+        return;
 
     const url = pinLink.href;
 
