@@ -1,5 +1,5 @@
 ![Pinsight Logo](src/assets/pinsight_promo_tile.png)
-# PinSight Chrome Extension
+# PinSight Browser Extension
 
 Hello ! This is the repository for the PinSight browser extension.
 
