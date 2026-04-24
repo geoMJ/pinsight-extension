@@ -34,6 +34,13 @@ export default defineConfig({
                     matches: ["https://*.pinterest.com/*"],
                 },
             ],
+            browser_specific_settings: {
+                gecko: {
+                    data_collection_permissions: {
+                        required: ["none"]
+                    }
+                }
+            }
         };
     },
 });
